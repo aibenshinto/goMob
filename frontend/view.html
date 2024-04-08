@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Phones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        #phoneList {
+            margin-top: 20px;
+        }
+        .phone {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mobile Phones</h1>
+    <div id="phoneList"></div>
+
+    <script>
+        // Function to fetch and display mobile phones
+        function fetchAndDisplayPhones() {
+            fetch('http://localhost:8080/api/mobilephones')
+                .then(response => response.json())
+                .then(phones => {
+                    const phoneListDiv = document.getElementById('phoneList');
+                    phoneListDiv.innerHTML = ''; // Clear previous content
+
+                    phones.forEach(phone => {
+                        const phoneDiv = document.createElement('div');
+                        phoneDiv.classList.add('phone');
+                        phoneDiv.innerHTML = `
+                            <h3>${phone.name}</h3>
+                            <p><strong>Specs:</strong> ${phone.specs}</p>
+                            <p><strong>Price:</strong> $${phone.price.toFixed(2)}</p>
+                        `;
+                        phoneListDiv.appendChild(phoneDiv);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching phones:', error);
+                });
+        }
+
+        // Call fetchAndDisplayPhones when the page loads
+        document.addEventListener('DOMContentLoaded', fetchAndDisplayPhones);
+    </script>
+</body>
+</html>

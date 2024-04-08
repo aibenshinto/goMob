@@ -1,0 +1,49 @@
+<!-- insert.html -->
+<form id="insertForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="image">Image URL:</label>
+    <input type="text" id="image" name="image"> <!-- Add image input if needed -->
+
+    <label for="specs">Specifications:</label>
+    <input type="text" id="specs" name="specs" required>
+
+    <label for="price">Price:</label>
+    <input type="number" id="price" name="price" step="0.01" min="0" required>
+
+    <input type="submit" value="Submit">
+</form>
+
+<script>
+    document.getElementById('insertForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const formData = {
+            name: document.getElementById('name').value,
+            image: document.getElementById('image').value,
+            specs: document.getElementById('specs').value,
+            price: parseFloat(document.getElementById('price').value)
+        };
+
+        fetch('http://localhost:8080/api/mobilephones', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Mobile phone added successfully!');
+                window.location.reload(); // Refresh the page after successful submission
+            } else {
+                throw new Error('Failed to add mobile phone');
+            }
+        })
+        .catch(error => {
+            console.error('Error adding mobile phone:', error);
+            alert('Failed to add mobile phone. Please try again.');
+        });
+    });
+</script>
