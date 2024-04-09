@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - All Products</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Admin Dashboard - All Products</h1>
+
+    <table id="productsTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Image</th>
+                <th>Specifications</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody id="productsBody">
+            <!-- Product details will be dynamically populated here -->
+        </tbody>
+    </table>
+
+    <script>
+        // Function to fetch all products and populate the table
+        function fetchProducts() {
+            fetch('http://localhost:8080/api/mobilephones')
+                .then(response => response.json())
+                .then(products => {
+                    const productsBody = document.getElementById('productsBody');
+                    productsBody.innerHTML = ''; // Clear existing table content
+
+                    products.forEach(product => {
+                        const row = productsBody.insertRow();
+                        row.innerHTML = `
+                            <td>${product.name}</td>
+                            <td><img src="${product.image}" alt="${product.name}" style="max-width: 100px;"></td>
+                            <td>${product.specs}</td>
+                            <td>$${product.price.toFixed(2)}</td>
+                        `;
+                    });
+                })
+                .catch(error => console.error('Error fetching products:', error));
+        }
+
+        // Call fetchProducts on page load
+        fetchProducts();
+    </script>
+</body>
+</html>

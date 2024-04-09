@@ -22,7 +22,9 @@ func main() {
 	r := mux.NewRouter()
 
 	// Register routes with handlers and pass db connection
-
+	r.HandleFunc("/api/login", func(w http.ResponseWriter, r *http.Request) {
+		crud.Login(w, r, db)
+	}).Methods("POST")
 	r.HandleFunc("/api/mobilephones", func(w http.ResponseWriter, r *http.Request) {
 		crud.GetAllMobilePhones(w, r, db)
 	}).Methods("GET")
@@ -52,6 +54,9 @@ func main() {
 	// Create a CORS-enabled handler with the router
 	corsHandler := cors(r)
 
+	fs := http.FileServer(http.Dir("./frontend"))
+	http.Handle("/", fs)
+	
 	// Start the server
 	log.Println("Server is running on port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", corsHandler))
