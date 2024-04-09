@@ -54,8 +54,6 @@ func main() {
 	// Create a CORS-enabled handler with the router
 	corsHandler := cors(r)
 
-	fs := http.FileServer(http.Dir("./frontend"))
-	http.Handle("/", fs)
 	
 	// Start the server
 	log.Println("Server is running on port 8080...")

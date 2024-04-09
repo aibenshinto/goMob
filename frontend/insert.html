@@ -41,35 +41,35 @@
 
 <script>
     document.getElementById('insertForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent default form submission
+    event.preventDefault(); // Prevent default form submission
 
-        const formData = {
-            name: document.getElementById('name').value,
-            image: document.getElementById('image').value,
-            specs: document.getElementById('specs').value,
-            price: parseFloat(document.getElementById('price').value)
-        };
+    const formData = new FormData(); // Create FormData object to handle file upload
 
-        fetch('http://localhost:8080/api/mobilephones', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(response => {
-            if (response.ok) {
-                alert('Mobile phone added successfully!');
-                window.location.reload(); // Refresh the page after successful submission
-            } else {
-                throw new Error('Failed to add mobile phone');
-            }
-        })
-        .catch(error => {
-            console.error('Error adding mobile phone:', error);
-            alert('Failed to add mobile phone. Please try again.');
-        });
+    // Add form fields to FormData object
+    formData.append('name', document.getElementById('name').value);
+    formData.append('specs', document.getElementById('specs').value);
+    formData.append('price', parseFloat(document.getElementById('price').value));
+    formData.append('image', document.getElementById('image').files[0]); // Add selected image file
+
+    // Perform fetch request with FormData
+    fetch('http://localhost:8080/api/mobilephones', {
+        method: 'POST',
+        body: formData // Use FormData object directly as the body
+    })
+    .then(response => {
+        if (response.ok) {
+            alert('Mobile phone added successfully!');
+            window.location.reload(); // Refresh the page after successful submission
+        } else {
+            throw new Error('Failed to add mobile phone');
+        }
+    })
+    .catch(error => {
+        console.error('Error adding mobile phone:', error);
+        alert('Failed to add mobile phone. Please try again.');
     });
+});
+
 </script>
 </body>
 

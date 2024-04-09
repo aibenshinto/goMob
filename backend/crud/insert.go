@@ -2,31 +2,53 @@ package crud
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
-
-	"main.go/models"
+	"os"
+	"strconv"
 )
 
 func CreateMobilePhone(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-	
-	var phone models.MobilePhone
 
-	err := json.NewDecoder(r.Body).Decode(&phone)
-	
+	name := r.FormValue("name")
+	specs := r.FormValue("specs")
+	priceStr := r.FormValue("price")
+	price, err := strconv.ParseFloat(priceStr, 64)
 	if err != nil {
-		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
+		http.Error(w, "Invalid price format", http.StatusBadRequest)
+		return
+	}
+
+	file, handler, err := r.FormFile("image")
+	if err != nil {
+		http.Error(w, "Failed to get image file", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	imagePath := "../images/" + handler.Filename 
+	outputFile, err := os.Create(imagePath)
+	if err != nil {
+		fmt.Println("error creating path", err)
+		http.Error(w, "Failed to save image file", http.StatusInternalServerError)
+		return
+	}
+	defer outputFile.Close()
+
+	_, err = io.Copy(outputFile, file)
+	if err != nil {
+		http.Error(w, "Failed to write image file", http.StatusInternalServerError)
 		return
 	}
 
 	_, err = db.Exec("INSERT INTO mobilePhones (name, image, specs, price) VALUES ($1, $2, $3, $4)",
-		phone.Name, phone.Image, phone.Specs, phone.Price)
+		name, imagePath, specs, price)
 	if err != nil {
 		http.Error(w, "Failed to create mobile phone", http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w,"the data is  : %v",phone)
 
+	fmt.Fprintf(w, "New mobile phone created: %s", name)
 	w.WriteHeader(http.StatusCreated)
 }
