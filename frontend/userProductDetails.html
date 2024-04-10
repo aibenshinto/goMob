@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .product-details {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .delete-btn {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        img.product-image {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Details</h1>
+        <div id="productDetails" class="product-details">
+            <!-- Product details will be populated dynamically -->
+        </div>
+    </div>
+
+    <script>
+        // Function to fetch and display product details
+        function displayProductDetails() {
+            const params = new URLSearchParams(window.location.search);
+            const productName = params.get('name');
+            const productImage = decodeURIComponent(params.get('image'));
+            const productSpecs = params.get('specs');
+            const productPrice = parseFloat(params.get('price')).toFixed(2);
+
+            const productDetailsContainer = document.getElementById('productDetails');
+            productDetailsContainer.innerHTML = `
+            <h2>${productName}</h2>
+            <img src="${productImage}" class="product-image" alt="${productName}">
+            <p><strong>Specifications:</strong> ${productSpecs}</p>
+            <p><strong>Price:</strong> $${productPrice}</p>
+            `;
+        }
+
+
+        displayProductDetails();
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

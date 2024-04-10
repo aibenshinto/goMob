@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Product</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Update Product</h1>
+        <form id="updateForm">
+            <div class="form-group">
+                <label for="name">Product Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="specs">Specifications</label>
+                <textarea class="form-control" id="specs" name="specs" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">Price ($)</label>
+                <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="image">Product Image</label>
+                <input type="file" class="form-control-file" id="image" name="image" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-primary">Update Product</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('updateForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+
+            const updatedProduct = {
+                name: document.getElementById('name').value,
+                specs: document.getElementById('specs').value,
+                price: parseFloat(document.getElementById('price').value),
+                // Retrieve selected image file
+                image: document.getElementById('image').files[0]
+            };
+
+            const formData = new FormData();
+            formData.append('name', updatedProduct.name);
+            formData.append('specs', updatedProduct.specs);
+            formData.append('price', updatedProduct.price);
+            formData.append('image', updatedProduct.image);
+
+            const url = `http://localhost:8080/api/mobilephones/${productId}`;
+            fetch(url, {
+                method: 'PUT',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Product updated successfully!');
+                    window.location.href = 'adminView.html'; // Redirect to admin dashboard after update
+                } else {
+                    throw new Error('Failed to update product');
+                }
+            })
+            .catch(error => {
+                console.error('Update product error:', error);
+                alert('Failed to update product. Please try again.');
+            });
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

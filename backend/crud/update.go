@@ -2,12 +2,13 @@ package crud
 
 import (
 	"database/sql"
-	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"main.go/models"
 )
 
 func UpdateMobilePhone(w http.ResponseWriter, r *http.Request, db *sql.DB) {
@@ -19,16 +20,41 @@ func UpdateMobilePhone(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 
-	var phone models.MobilePhone
-	err = json.NewDecoder(r.Body).Decode(&phone)
+	name := r.FormValue("name")
+	specs := r.FormValue("specs")
+	priceStr := r.FormValue("price")
+	price, err := strconv.ParseFloat(priceStr, 64)
 	if err != nil {
-		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
+		http.Error(w, "Invalid price format", http.StatusBadRequest)
 		return
 	}
-	phone.ID = id // Set ID from URL parameter
+
+	file, handler, err := r.FormFile("image")
+	if err != nil {
+		http.Error(w, "Failed to get image file", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	imagePath := "../images/" + handler.Filename
+	outputFile, err := os.Create(imagePath)
+	if err != nil {
+		fmt.Println("error creating path", err)
+		http.Error(w, "Failed to save image file", http.StatusInternalServerError)
+		return
+	}
+	defer outputFile.Close()
+
+	_, err = io.Copy(outputFile, file)
+	if err != nil {
+		http.Error(w, "Failed to write image file", http.StatusInternalServerError)
+		return
+	}
+
+	// Set ID from URL parameter
 
 	_, err = db.Exec("UPDATE mobilePhones SET name = $1, image = $2, specs = $3, price = $4 WHERE id = $5",
-		phone.Name, phone.Image, phone.Specs, phone.Price, phone.ID)
+		name, imagePath, specs, price, id)
 	if err != nil {
 		http.Error(w, "Failed to update mobile phone", http.StatusInternalServerError)
 		return

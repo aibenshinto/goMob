@@ -3,68 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile Phones</title>
-    <!-- Include Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>All Products</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        /* Custom styles */
         body {
+            font-family: Arial, sans-serif;
             padding: 20px;
         }
-        .phone {
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
+        .product-card {
+            cursor: pointer;
+        }
+        .product-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .product-details {
+            display: none;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
         }
     </style>
 </head>
 <body>
-    <h1 class="mb-4">Mobile Phones</h1>
-    <div id="phoneList" class="row"></div>
+    <h1 class="mb-4">All Products</h1>
 
-    <!-- Include Bootstrap JS and jQuery -->
+    <div class="container">
+        <div class="row" id="productsRow">
+            <!-- Product cards will be dynamically populated here -->
+        </div>
+    </div>
+
+    <div id="productDetailsContainer" class="container">
+        <!-- Product details will be displayed here -->
+    </div>
+
+    <script>
+        // Function to fetch all products and populate the cards
+        function fetchProducts() {
+            fetch('http://localhost:8080/api/mobilephones')
+                .then(response => response.json())
+                .then(products => {
+                    const productsRow = document.getElementById('productsRow');
+                    productsRow.innerHTML = ''; // Clear existing cards
+
+                    products.forEach(product => {
+                        const cardHtml = `
+                            <div class="col-md-4 mb-4">
+                                <div class="card product-card" onclick="showProductDetails('${product.name}', '${product.specs}', '${product.id}', '${product.image}', '${product.price.toFixed(2)}')">
+                                    <img src="${product.image}" class="card-img-top" alt="${product.name}" style="max-height: 200px; object-fit: cover;">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${product.name}</h5>
+                                        <p class="card-text">${product.specs}</p>
+                                        <p class="card-text">Price: $${product.price.toFixed(2)}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        productsRow.innerHTML += cardHtml;
+                    });
+                })
+                .catch(error => console.error('Error fetching products:', error));
+        }
+
+        // Function to show product details
+        function showProductDetails(name, specs, id, image, price) {
+            const url = `userProductDetails.html?name=${encodeURIComponent(name)}&specs=${encodeURIComponent(specs)}&id=${encodeURIComponent(id)}&image=${encodeURIComponent(image)}&price=${encodeURIComponent(price)}`;
+            window.location.href = url;
+        }
+        
+
+        // Call fetchProducts on page load
+        fetchProducts();
+    </script>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        // Function to fetch and display mobile phones
-        function fetchAndDisplayPhones() {
-            fetch('http://localhost:8080/api/mobilephones')
-                .then(response => response.json())
-                .then(phones => {
-                    const phoneListDiv = document.getElementById('phoneList');
-                    phoneListDiv.innerHTML = ''; // Clear previous content
-
-                    phones.forEach(phone => {
-                        // Create Bootstrap card for each phone
-                        const phoneCard = document.createElement('div');
-                        phoneCard.classList.add('col-md-4');
-
-                        const cardContent = `
-                        <div>
-                            <div class="card">
-                                <img src="${phone.image}" class="card-img-top" alt="${phone.name}">
-                                <div class="card-body">
-                                    <h5 class="card-title">${phone.name}</h5>
-                                    <p class="card-text"><strong>Specifications:</strong> ${phone.specs}</p>
-                                    <p class="card-text"><strong>Price:</strong> $${phone.price.toFixed(2)}</p>
-                                </div>
-                            </div>
-                        </div>
-                        `;
-
-                        phoneCard.innerHTML = cardContent;
-                        phoneListDiv.appendChild(phoneCard);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching phones:', error);
-                });
-        }
-
-        // Call fetchAndDisplayPhones when the page loads
-        document.addEventListener('DOMContentLoaded', fetchAndDisplayPhones);
-    </script>
 </body>
 </html>
