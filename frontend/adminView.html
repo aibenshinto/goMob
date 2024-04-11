@@ -12,10 +12,31 @@
         }
         .product-card {
             cursor: pointer;
+            height: 350px; /* Increase the height of the card */
+            width: 250px; /* Decrease the width of the card */
+            margin: 0 auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease-in-out;
         }
         .product-card:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
+            transform: translateY(-5px);
+        }
+        .product-card .card-img-top {
+            height: 200px; /* Adjust the height of the image */
+            object-fit: cover; /* Maintain aspect ratio and cover the card */
+        }
+        .product-card .card-body {
+            padding: 15px;
+        }
+        .product-card .card-title {
+            font-size: 18px; /* Adjust title font size */
+            margin-bottom: 10px;
+        }
+        .product-card .card-text {
+            font-size: 16px; /* Adjust text font size */
+            color: #555;
         }
         .delete-btn {
             background-color: #dc3545;
@@ -25,25 +46,34 @@
             margin-top: 20px;
             cursor: pointer;
         }
-        .product-details {
-            display: none;
+        #productsRow {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
             margin-top: 20px;
-            border: 1px solid #ccc;
-            padding: 10px;
+        }
+        .col-md-4 {
+            flex: 0 0 250px; /* Fixed width for each card */
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <h1 class="mb-4">Admin Dashboard - All Products</h1>
-    <button id="deleteBtn" class="delete-btn" onclick="inserProduct()">Insert Product</button>
+    <nav class="navbar navbar-light bg-light justify-content-between">
+        <a class="navbar-brand">Admin Dashboard - All Products</a>
+        <form class="form-inline" onsubmit="searchProduct(event)">
+            <input class="form-control mr-sm-2" type="search" id="searchInput" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </nav>
+
+    <button id="deleteBtn" class="delete-btn" onclick="insertProduct()">Add Product</button>
+
     <div class="container">
         <div class="row" id="productsRow">
             <!-- Product cards will be dynamically populated here -->
-            
         </div>
     </div>
-
-
 
     <script>
         // Function to fetch all products and populate the cards
@@ -56,12 +86,11 @@
 
                     products.forEach(product => {
                         const cardHtml = `
-                            <div class="col-md-4 mb-4">
+                            <div class="col-md-4">
                                 <div class="card product-card" onclick="showProductDetails('${product.name}', '${product.specs}', '${product.id}', '${product.image}', '${product.price.toFixed(2)}')">
-                                    <img src="${product.image}" class="card-img-top" alt="${product.name}" style="max-height: 200px; object-fit: cover;">
+                                    <img src="${product.image}" class="card-img-top" alt="${product.name}">
                                     <div class="card-body">
                                         <h5 class="card-title">${product.name}</h5>
-                                        <p class="card-text">${product.specs}</p>
                                         <p class="card-text">Price: $${product.price.toFixed(2)}</p>
                                     </div>
                                 </div>
@@ -78,9 +107,19 @@
             const url = `productdetails.html?name=${encodeURIComponent(name)}&specs=${encodeURIComponent(specs)}&id=${encodeURIComponent(id)}&image=${encodeURIComponent(image)}&price=${encodeURIComponent(price)}`;
             window.location.href = url;
         }
-        
-        function inserProduct() {
-            window.location.href = 'insert.html'
+
+        // Function to redirect to insert.html for inserting a new product
+        function insertProduct() {
+            window.location.href = 'insert.html';
+        }
+
+        // Function to handle product search
+        function searchProduct(event) {
+            event.preventDefault();
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (searchTerm) {
+                window.location.href = `productdetails.html?search=${encodeURIComponent(searchTerm)}`;
+            }
         }
 
         // Call fetchProducts on page load

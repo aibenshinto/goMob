@@ -15,6 +15,8 @@
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 500px; /* Set a maximum width for the product details container */
+            margin: 0 auto; /* Center the container horizontally */
         }
         .delete-btn {
             background-color: #dc3545;
@@ -29,6 +31,12 @@
             height: auto;
             margin-bottom: 20px;
         }
+        hr {
+            height: 4px; /* Adjust the height of the <hr> tag */
+            background-color: #ccc; /* Color of the <hr> tag */
+            border: none; /* Remove default border */
+            margin: 20px 0; /* Add margin above and below the <hr> tag */
+        }
     </style>
 </head>
 <body>
@@ -37,34 +45,36 @@
         <div id="productDetails" class="product-details">
             <!-- Product details will be populated dynamically -->
         </div>
-        <button id="deleteBtn" class="delete-btn" onclick="deleteProduct()">Delete Product</button>
-        <button id="updateBtn" class="btn btn-primary" onclick="redirectToUpdatePage()">Update Product</button>
-    </div>
+   </div>
 
     <script>
         // Function to fetch and display product details
         function displayProductDetails() {
-            const params = new URLSearchParams(window.location.search);
-            const productName = params.get('name');
-            const productImage = decodeURIComponent(params.get('image'));
-            const productSpecs = params.get('specs');
-            const productPrice = parseFloat(params.get('price')).toFixed(2);
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchTerm = urlParams.get('search');
+            if (searchTerm) {
+                fetchSearchResults(searchTerm);
+            } else {
+                const productName = urlParams.get('name');
+                const productId = urlParams.get('id');
+                const productImage = decodeURIComponent(urlParams.get('image'));
+                const productSpecs = urlParams.get('specs');
+                const productPrice = parseFloat(urlParams.get('price')).toFixed(2);
 
-            const productDetailsContainer = document.getElementById('productDetails');
-            productDetailsContainer.innerHTML = `
-            <h2>${productName}</h2>
-            <img src="${productImage}" class="product-image" alt="${productName}">
-            <p><strong>Specifications:</strong> ${productSpecs}</p>
-            <p><strong>Price:</strong> $${productPrice}</p>
-            `;
+                const productDetailsContainer = document.getElementById('productDetails');
+                productDetailsContainer.innerHTML = `
+                    <h2>${productName}</h2>
+                    <img src="${productImage}" class="product-image" alt="${productName}">
+                    <p><strong>Specifications:</strong> ${productSpecs}</p>
+                    <p><strong>Price:</strong> $${productPrice}</p>
+                    <button class="delete-btn" onclick="deleteProduct('${productName}', '${productId}')">Delete Product</button>
+                    <button class="btn btn-primary" onclick="redirectToUpdatePage('${productId}')">Update Product</button>
+                `;
+            }
         }
 
         // Function to delete the current product
-        function deleteProduct() {
-            const params = new URLSearchParams(window.location.search);
-            const productName = params.get('name');
-            const productId = params.get('id');
-
+        function deleteProduct(productName, productId) {
             if (confirm(`Are you sure you want to delete ${productName}?`)) {
                 const url = `http://localhost:8080/api/mobilephones/${productId}`;
                 fetch(url, {
@@ -84,11 +94,36 @@
                 });
             }
         }
-        function redirectToUpdatePage() {
-            const params = new URLSearchParams(window.location.search);
-            const productId = params.get('id');
+
+        // Function to redirect to update product page
+        function redirectToUpdatePage(productId) {
             window.location.href = `updateProduct.html?id=${productId}`;
         }
+
+        // Function to fetch and display search results
+        function fetchSearchResults(searchTerm) {
+            fetch(`http://localhost:8080/api/mobilephones/search?search=${searchTerm}`)
+                .then(response => response.json())
+                .then(products => {
+                    const productDetailsContainer = document.getElementById('productDetails');
+                    productDetailsContainer.innerHTML = ''; // Clear existing product details
+
+                    products.forEach(product => {
+                        const productHtml = `
+                            <h2>${product.name}</h2>
+                            <img src="${product.image}" class="product-image" alt="${product.name}">
+                            <p><strong>Specifications:</strong> ${product.specs}</p>
+                            <p><strong>Price:</strong> $${product.price.toFixed(2)}</p>
+                            <button class="delete-btn" onclick="deleteProduct('${product.name}', '${product.id}')">Delete Product</button>
+                            <button class="btn btn-primary" onclick="redirectToUpdatePage('${product.id}')">Update Product</button>
+                            <br><br><hr><hr><br><br>
+                        `;
+                        productDetailsContainer.innerHTML += productHtml;
+                    });
+                })
+                .catch(error => console.error('Error fetching search results:', error));
+        }
+
         // Call displayProductDetails function on page load
         displayProductDetails();
     </script>

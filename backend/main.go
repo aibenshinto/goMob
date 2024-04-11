@@ -33,10 +33,9 @@ func main() {
 		crud.CreateMobilePhone(w, r, db)
 	}).Methods("POST")
 
-	r.HandleFunc("/api/mobilephones/{id}", func(w http.ResponseWriter, r *http.Request) {
-		crud.GetMobilePhoneByID(w, r, db)
+	r.HandleFunc("/api/mobilephones/search", func(w http.ResponseWriter, r *http.Request) {
+		crud.SearchMobilePhones(w, r, db)
 	}).Methods("GET")
-
 	r.HandleFunc("/api/mobilephones/{id}", func(w http.ResponseWriter, r *http.Request) {
 		crud.UpdateMobilePhone(w, r, db)
 	}).Methods("PUT")
