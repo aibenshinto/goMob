@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	// Connect to the database
+	// Connection to the database
 	db, err := connection.ConnectDB()
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
@@ -26,11 +26,11 @@ func main() {
 		crud.Login(w, r, db)
 	}).Methods("POST")
 	r.HandleFunc("/api/mobilephones", func(w http.ResponseWriter, r *http.Request) {
-		crud.GetAllMobilePhones(w, r, db)
+		crud.GetAllMobilePhones(w, r, db) 
 	}).Methods("GET")
 
 	r.HandleFunc("/api/mobilephones", func(w http.ResponseWriter, r *http.Request) {
-		crud.CreateMobilePhone(w, r, db)
+		crud.CreateMobilePhone(w, r, db)  
 	}).Methods("POST")
 
 	r.HandleFunc("/api/mobilephones/search", func(w http.ResponseWriter, r *http.Request) {

@@ -9,7 +9,7 @@ import (
 )
 
 func GetAllMobilePhones(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-	// Establish a database connection
+
 	rows, err := db.Query("SELECT id, name, image, specs, price FROM mobilePhones")
 	if err != nil {
 		http.Error(w, "Failed to fetch mobile phones", http.StatusInternalServerError)
@@ -41,4 +41,5 @@ func GetAllMobilePhones(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// Encode phones slice as JSON and send response
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(phones)
+
 }

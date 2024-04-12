@@ -7,7 +7,7 @@ import (
 	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
-// Function to establish a connection to the PostgreSQL database
+
 func ConnectDB() (*sql.DB, error) {
 	// PostgreSQL connection string
 	connectionString := "postgres://vefceiis:pzTKYphme3DcRyDg3ertxItmrtc44HiQ@rain.db.elephantsql.com/vefceiis"
@@ -18,11 +18,11 @@ func ConnectDB() (*sql.DB, error) {
 		return nil, fmt.Errorf("failed to connect to database: %v", err)
 	}
 
-	// Ping the database to verify the connection
-	err = db.Ping()
-	if err != nil {
-		return nil, fmt.Errorf("failed to ping database: %v", err)
-	}
+	// Ping is used for checking wheather the connection is made or not
+	// err = db.Ping()
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to ping database: %v", err)
+	// }
 
 	fmt.Println("Connected to the database!")
 
