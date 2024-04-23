@@ -65,7 +65,7 @@
         console.log('Response received:', response);
         if (response.ok) {
             alert('Mobile phone added successfully!');
-            // window.location.reload(); // Refresh the page after successful submission
+            window.location.reload(); // Refresh the page after successful submission
         } else {
             throw new Error('Failed to add mobile phone');
         }
