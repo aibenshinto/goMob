@@ -54,8 +54,6 @@ func CreateMobilePhone(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 
-	w.Header().Set("Content-type", "text/plain")
-
-	w.Write([]byte("successful"))
+	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "New mobile phone created: %s", name)
 }
